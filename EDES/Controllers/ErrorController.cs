@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using EDES.Models;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Microsoft.Net.Http.Headers;
+using Microsoft.Extensions.Primitives;
+using Microsoft.AspNetCore.Authorization;
+using EDES.Auth;
 
 namespace EDES.Controllers
 {
@@ -24,23 +28,25 @@ namespace EDES.Controllers
                 _context.SaveChanges();
             }
         }
-
+#if DEBUG
+        // TODO: Only for testing, remove
         // GET /error
         [HttpGet]
         public IEnumerable<ErrorReport> Get()
         {
             return _context.ErrorReports.ToList();
         }
-
+#endif
         // POST /error
         [HttpPost]
+        [Authorize(AuthenticationSchemes = ApiKeyAuthDefaults.AuthenticationScheme)]
         public IActionResult Post([FromBody]JObject body)
         {
             if (body == null)
             {
                 return BadRequest();
             }
-
+            
             var report = new ErrorReport()
             {
                 Created = DateTimeOffset.UtcNow,

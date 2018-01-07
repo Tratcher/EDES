@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 using EDES.Models;
+using EDES.Auth;
 
 namespace EDES
 {
@@ -27,6 +28,8 @@ namespace EDES
         {
             services.AddDbContext<ErrorReportContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ErrorDatabase")));
             services.AddMvc();
+            services.AddAuthentication()
+                .AddApiKey(Configuration["ApiKey"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -35,6 +38,7 @@ namespace EDES
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
             }
 
             app.UseMvc();
